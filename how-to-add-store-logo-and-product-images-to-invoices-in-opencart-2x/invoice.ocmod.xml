@@ -1,0 +1,93 @@
+<modification>
+	<name>Add images to invoice by iSenseLabs</name>
+	<version>1.0 (Initial)</version>	
+	<link>http://isenselabs.com</link>
+	<code>isense_invoice</code>
+	<author>iSenseLabs</author>
+
+	<file path="admin/controller/sale/order.php">
+		<operation>
+			<search><![CDATA[public function invoice() {]]></search>
+			<add position="after"><![CDATA[
+				// ISENSELABS.COM CODE STARTS HERE
+
+				$this->load->model('catalog/product'); 
+				$this->load->model('tool/image');
+
+				// ISENSELABS.COM CODE ENDS HERE
+			]]></add>
+		</operation>
+
+		<operation>
+			<search index="0"><![CDATA[$product_data[] = array(]]></search>
+			<add position="before"><![CDATA[
+				// ISENSELABS.COM CODE STARTS HERE
+					$width = 100;
+					$height = 100;
+					$product_info = $this->model_catalog_product->getProduct($product['product_id']);	
+					if ($product_info['image']) {
+						$image = $this->model_tool_image->resize($product_info['image'], $width, $height);
+					} else {
+						$image = $this->model_tool_image->resize('placeholder.png', $width, $height);
+					}	
+				// ISENSELABS.COM CODE ENDS HERE
+			]]></add>
+		</operation>
+
+		<operation>
+			<search index="0"><![CDATA[$product_data[] = array(]]></search>
+			<add position="after"><![CDATA[
+				'image'	   => $image, // ISENSELABS.COM
+			]]></add>
+		</operation>
+
+		<operation>
+			<search index="0"><![CDATA[$this->response->setOutput($this->load->view('sale/order_invoice.tpl', $data));]]></search>
+			<add position="before"><![CDATA[
+				// ISENSELABS.COM CODE STARTS HERE
+		
+				if (isset($this->request->server['HTTPS']) && (($this->request->server['HTTPS'] == 'on') || ($this->request->server['HTTPS'] == '1'))) {
+					$server = $this->config->get('config_ssl');
+				} else {
+					$server = $this->config->get('config_url');
+				}
+				
+				if ($this->config->get('config_logo') && file_exists(DIR_IMAGE . $this->config->get('config_logo'))) {
+					$data['logo'] = $server . 'image/' . $this->config->get('config_logo');
+				} else {
+					$data['logo'] = '';
+				}
+				
+				// ISENSELABS.COM CODE ENDS HERE
+			]]></add>
+		</operation>
+	</file>
+
+	<file path="admin/view/template/sale/order_invoice.tpl">
+		<operation>
+			<search><![CDATA[<div style="page-break-after: always;">]]></search>
+			<add position="after"><![CDATA[
+				<!-- ISENSELABS.COM CODE STARTS HERE -->
+
+				<?php if(isset($logo) && !empty($logo)) { ?>
+            		<img src="../<?php echo $logo ?>" style="margin: 15px 0 15px 0;" />
+           		<?php } ?>
+
+				<!-- ISENSELABS.COM CODE ENDS HERE -->
+			]]></add>
+		</operation>
+
+		<operation>
+			<search><![CDATA[<?php echo $product['name']; ?>]]></search>
+			<add position="before"><![CDATA[
+				<!-- ISENSELABS.COM CODE STARTS HERE -->
+
+				<?php if(isset($product['image']) && !empty($product['image'])) { ?>
+            		<img src="<?php echo $product['image'] ?>" />
+           		<?php } ?>
+
+				<!-- ISENSELABS.COM CODE ENDS HERE -->
+			]]></add>
+		</operation>
+	</file>
+</modification>
