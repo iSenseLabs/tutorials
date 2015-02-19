@@ -11,9 +11,17 @@
 				private $default_image = 'no_image.jpg';
 			]]></add>
 		</operation>
-		<operation error="skip" info="Modify Image Query">
+		<operation error="skip" info="Modify Main Image Query">
 			<search position="replace"><![CDATA[$query->row['image']]]></search>
-			<add><![CDATA[((empty($query->row['image']) && !empty($this->default_image) && file_exists(DIR_IMAGE . $this->default_image)) ? $this->default_image : $query->row['image'])]]></add>
+			<add><![CDATA[((empty($query->row['image']) && file_exists(DIR_IMAGE . $query->row['image']) && !empty($this->default_image) && file_exists(DIR_IMAGE . $this->default_image)) ? $this->default_image : $query->row['image'])]]></add>
+		</operation>
+		<operation error="skip" info="Modify Additional Images Query">
+			<search position="after"><![CDATA[$query = $this->db->query("SELECT * FROM " . DB_PREFIX . "product_image WHERE product_id = '" . (int)$product_id . "' ORDER BY sort_order ASC");]]></search>
+			<add><![CDATA[
+				if (!empty($query->rows)) { foreach ($query->rows as $k => $query_row) {
+					$query->rows[$k]['image'] = ((empty($query_row['image']) && file_exists(DIR_IMAGE . $query_row['image']) && !empty($this->default_image) && file_exists(DIR_IMAGE . $this->default_image)) ? $this->default_image : $query_row['image']);
+				} }
+			]]></add>
 		</operation>
 	</file>
 </modification>
