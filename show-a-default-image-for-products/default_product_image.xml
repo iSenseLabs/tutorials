@@ -1,0 +1,19 @@
+<modification>
+	<id>Show a default image for products</id>
+	<version>1.4.x and above</version>
+	<vqmver>2.5.0</vqmver>
+	<author>isenselabs.com</author>
+	<file name="catalog/model/catalog/product.php">
+		<operation error="skip" info="Default Image">
+			<search position="after"><![CDATA[class ModelCatalogProduct extends Model {]]></search>
+			<add><![CDATA[
+				// Path to your default product image.
+				private $default_image = 'no_image.jpg';
+			]]></add>
+		</operation>
+		<operation error="skip" info="Modify Image Query">
+			<search position="replace"><![CDATA[$query->row['image']]]></search>
+			<add><![CDATA[((empty($query->row['image']) && !empty($this->default_image) && file_exists(DIR_IMAGE . $this->default_image)) ? $this->default_image : $query->row['image'])]]></add>
+		</operation>
+	</file>
+</modification>
