@@ -1,0 +1,16 @@
+<modification>
+	<name>Remove option price</name>
+	<version>1.0</version>
+	<link>http://isenselabs.com</link>
+	<author>iSenseLabs</author>
+	<code>isenselabs_remove_option_price</code>
+
+	<file path="catalog/view/theme/*/template/product/product.tpl">
+		<operation>
+			<search><![CDATA[<?php foreach ($option['product_option_value'] as $option_value) { ?>]]></search>
+			<add position="after"><![CDATA[<?php unset($option_value['price']); $option_value['price'] ="";?>]]>
+			</add>
+		</operation>
+	</file>
+	
+</modification>

@@ -1,0 +1,227 @@
+<modification>
+	<name>Add description to product options</name>
+	<version>1.0</version>
+	<link>http://isenselabs.com</link>
+	<author>iSenseLabs</author>
+	<code>isenselabs_add_description_to_product_options</code>
+	
+	<file path="admin/language/*/catalog/option.php">
+		<operation>
+			<search><![CDATA[$_['entry_sort_order']    = 'Sort Order';]]></search>
+			<add position="after"><![CDATA[$_['entry_description']  = 'Description:';]]></add>
+		</operation>
+	</file>
+
+	<file path="admin/controller/catalog/option.php">
+		<operation>
+			<search><![CDATA[$data['entry_sort_order'] = $this->language->get('entry_sort_order');]]></search>
+			<add position="after"><![CDATA[
+				$data['entry_description'] = $this->language->get('entry_description');
+			]]></add>
+		</operation>
+		
+		<operation>
+			<search><![CDATA[public function index() {]]></search>
+			<add position="after"><![CDATA[
+			$query = $this->db->query("DESC " . DB_PREFIX . "option_value_description description");
+			if (!$query->num_rows) {
+				$this->db->query("ALTER TABLE " . DB_PREFIX . "option_value_description ADD description TEXT CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL");
+			}
+			]]></add>
+		</operation>
+	</file>
+
+	<file path="admin/model/catalog/option.php">
+		<operation>
+			<search><![CDATA[
+			$this->db->query("INSERT INTO " . DB_PREFIX . "option_value_description SET option_value_id = '" . (int)$option_value_id . "', language_id = '" . (int)$language_id . "', option_id = '" . (int)$option_id . "', name = '" . $this->db->escape($option_value_description['name']) . "'");
+			]]></search>
+			<add position="replace"><![CDATA[
+			$this->db->query("INSERT INTO " . DB_PREFIX . "option_value_description SET option_value_id = '" . (int)$option_value_id . "', language_id = '" . (int)$language_id . "', option_id = '" . (int)$option_id . "', name = '" . $this->db->escape($option_value_description['name']) . "', description = '" . $this->db->escape($option_value_description['description']) . "'");
+			]]></add>
+		</operation>
+		
+		<operation>
+			<search><![CDATA[
+			$option_value_description_data[$option_value_description['language_id']] = array('name' => $option_value_description['name']);
+			]]></search>
+			<add position="replace"><![CDATA[
+			$option_value_description_data[$option_value_description['language_id']] = array('name' => $option_value_description['name'], 'description' => $option_value_description['description']);
+			]]></add>
+		</operation>
+	</file>
+
+	<file path="admin/view/template/catalog/option_form.tpl">
+		<operation>
+			<search><![CDATA[
+				<label class="col-sm-2 control-label" for="input-sort-order"><?php echo $entry_sort_order; ?></label>
+			]]></search>
+			<add position="before"><![CDATA[
+				<label class="col-sm-2 control-label" for="input-sort-order"><?php echo $entry_description; ?></label>
+			]]></add>
+		</operation>
+		
+		<operation>
+			<search><![CDATA[
+				<td colspan="3"></td>
+			]]></search>
+			<add position="replace"><![CDATA[
+			<td colspan="4"></td>
+			]]></add>
+		</operation>
+		
+		<operation>
+			<search><![CDATA[
+				<td class="text-left required"><?php echo $entry_option_value; ?></td>
+			]]></search>
+			<add position="after"><![CDATA[
+				<td class="text-left">Option Value Description</td>
+			]]></add>
+		</operation>		
+		
+		<operation>
+			<search><![CDATA[
+				<td class="text-left required"><?php echo $entry_option_value; ?></td>
+			]]></search>
+			<add position="replace"><![CDATA[
+				<td class="text-left required" style="width:30%;"><?php echo $entry_option_value; ?></td>
+			]]></add>
+		</operation>
+		
+		<operation>
+			<search><![CDATA[
+				<?php echo $footer; ?>
+			]]></search>
+			<add position="after"><![CDATA[
+				<script type="text/javascript">
+                    <?php foreach ($languages as $language) { ?>
+                        $("#description-<?php echo $option_value_row; ?>-<?php echo $language['language_id']; ?>").summernote({height: 100});
+                    <?php } ?>
+                </script>
+			]]></add>
+		</operation>
+					
+					
+		<operation>
+			<search><![CDATA[
+				<td class="text-left"><a href="" id="thumb-image<?php echo $option_value_row; ?>" data-toggle="image" class="img-thumbnail"><img src="<?php echo $option_value['thumb']; ?>" alt="" title="" data-placeholder="<?php echo $placeholder; ?>" /></a>
+			]]></search>
+			<add position="before"><![CDATA[
+			<!--ProductOption Description Start-->
+				<td class="text-left">
+					<div class="tabbable"> 
+						<div class="tab-navigation">
+							<ul class="nav nav-tabs mainMenuTabs">
+								<?php $class="active";  foreach ($languages as $language) { ?>
+									<li class="<?php echo $class; ?>"><a href="#tab-<?php echo $language['code']; ?>" data-toggle="tab"><img src="view/image/flags/<?php echo $language['image']; ?>"/></a></li>
+								<?php  $class="";}?>
+							</ul>
+                     	 </div>
+						<div class="tab-content">
+							<?php $class=" active"; foreach ($languages as $language) { ?>
+								<div id="tab-<?php echo $language['code']; ?>" language-id="<?php echo $language['language_id']; ?>" class="row-fluid tab-pane<?php echo $class; ?> language"><div>
+                             	<textarea language-id="<?php echo $language['language_id']; ?>" name="option_value[<?php echo $option_value_row; ?>][option_value_description][<?php echo $language['language_id']; ?>][description]" id="description-<?php echo $option_value_row; ?>-<?php echo $language['language_id']; ?>"><?php echo isset($option_value['option_value_description'][$language['language_id']]) ? $option_value['option_value_description'][$language['language_id']]['description'] : ''; ?></textarea>
+                        	<?php $class="";} ?>
+                      	</div>
+                    </div>
+				</td>
+				<script type="text/javascript">
+                    <?php foreach ($languages as $language) { ?>
+                        $("#description-<?php echo $option_value_row; ?>-<?php echo $language['language_id']; ?>").summernote({height: 100});
+                    <?php } ?>
+                </script>
+			<!--ProductOption Description End-->
+			]]></add>
+		</operation>
+		
+		<operation>
+			<search><![CDATA[
+				 html += '  <td class="text-left"><a href="" id="thumb-image' + option_value_row + '" data-toggle="image" class="img-thumbnail"><img src="<?php echo $placeholder; ?>" alt="" title="" data-placeholder="<?php echo $placeholder; ?>" /></a><input type="hidden" name="option_value[' + option_value_row + '][image]" value="" id="input-image' + option_value_row + '" /></td>';
+			]]></search>
+			<add position="before"><![CDATA[
+				html += '<td class="text-left">';
+				html += '	<div class="tabbable">';
+				html += '		<div class="tab-navigation">';
+				html += '			<ul class="nav nav-tabs mainMenuTabs">';
+				<?php $class="active";  foreach ($languages as $language) { ?>
+				html += '    <li class="<?php echo $class; ?>"><a href="#tab-<?php echo $language['code']; ?>" data-toggle="tab"><img src="view/image/flags/<?php echo $language['image']; ?>"/></a></li>';
+				<?php  $class="";}?>
+				html += '  			</ul>';
+				html += '  </div>';
+				
+				html += '	<div class="tab-content">'
+				<?php $class="active"; foreach ($languages as $language) { ?>
+				html += '		<div id="tab-<?php echo $language['code']; ?>" language-id="<?php echo $language['language_id']; ?>" class="row-fluid tab-pane<?php echo $class; ?> language"><div>';
+				html += '			<textarea language-id="<?php echo $language['language_id']; ?>" name="option_value[<?php echo $option_value_row; ?>][option_value_description][<?php echo $language['language_id']; ?>][description]" id="description-<?php echo $option_value_row; ?>-<?php echo $language['language_id']; ?>"><?php echo isset($option_value['option_value_description'][$language['language_id']]) ? $option_value['option_value_description'][$language['language_id']]['description'] : ''; ?></textarea>';
+				<?php $class="";} ?>
+				html += '		</div>';
+				html += '	</div>';
+				html += '</td>';
+			]]></add>
+		</operation>
+	</file>
+
+	<file path="catalog/controller/product/product.php">
+		<operation>
+			<search><![CDATA[$data['text_tags'] = $this->language->get('text_tags');]]></search>
+			<add position="after"><![CDATA[
+				$data['text_view'] = $this->language->get('text_view');
+			]]></add>
+		</operation>
+		
+		<operation>
+			<search><![CDATA['name'                    => $option_value['name'],]]></search>
+			<add position="after"><![CDATA[
+			'description'             => html_entity_decode($option_value['description'], ENT_QUOTES, 'UTF-8'),
+			]]></add>
+		</operation>
+	</file>
+
+	<file path="catalog/language/*/product/product.php">
+		<operation>
+			<search><![CDATA[$_['text_error']               = 'Product not found!';]]></search>
+			<add position="after"><![CDATA[
+			$_['text_view']         = 'view more';
+			]]></add>
+		</operation>
+	</file>
+
+	<file path="catalog/model/catalog/product.php">
+		<operation>
+			<search><![CDATA['name'                    => $product_option_value['name'],]]></search>
+			<add position="after"><![CDATA[
+			'description'             => (isset($product_option_value['description']) ? $product_option_value['description'] : ''),
+			]]></add>
+		</operation>
+	</file>
+
+	<file path="catalog/view/theme/*/template/product/product.tpl">
+		<operation>
+			<search><![CDATA[(<?php echo $option_value['price_prefix']; ?><?php echo $option_value['price']; ?>)]]></search>
+			<add position="after"><![CDATA[
+				 <?php } ?>
+				 <?php if(isset($option_value) && $option_value['description']) { ?>
+                        <a class="view" id="<?php echo $option_value['option_value_id']; ?>"> View more </a>
+                        <div id="desc_<?php echo $option_value['option_value_id']; ?>" style="display:none">
+                            <?php echo $option_value['description'] ?>
+                        </div>
+			]]></add>
+		</operation>
+		<operation>
+			<search><![CDATA[
+				 <?php echo $footer; ?>
+			]]></search>
+			<add position="before"><![CDATA[
+ 				<script>
+                    $(document).ready(function(){
+    				$('.view').hover(function(){  
+					 $("#desc_".concat(this.id)).fadeIn(500)
+    					},function(){
+     				  $("#desc_".concat(this.id)).fadeOut(500)
+   						})
+					});
+				</script>
+			]]></add>
+		</operation>
+	</file>
+</modification>

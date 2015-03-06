@@ -1,0 +1,48 @@
+<modification>
+	<name>Add product quantity to product options</name>
+	<version>1.0</version>
+	<link>http://isenselabs.com</link>
+	<author>iSenseLabs</author>
+	<code>isenselabs_quantity_to_product_options</code>
+	
+	
+	<file path="catalog/view/theme/*/template/product/product.tpl">
+		<operation>
+			<search><![CDATA[ (<?php echo $option_value['price_prefix']; ?><?php echo $option_value['price']; ?>)]]></search>
+			<add position="after"><![CDATA[
+				<?php } if (isset($option_value['quantity']) && $option_value['quantity'] > 10) { ?>
+					&nbsp;[<?php echo $option_value['quantity']; ?>&nbsp;<?php echo $text_pcs; ?>]
+				<?php } elseif ($option_value['quantity']) { ?>
+					&nbsp;[<span style="color: #F00"><?php echo str_replace('{quant}', $option_value['quantity'], $text_only); ?></span>]
+			]]></add>
+		</operation>
+	</file>
+	
+	<file path="catalog/controller/product/product.php">
+		<operation>
+			<search><![CDATA['name'                    => $option_value['name'],]]></search>
+			<add position="after"><![CDATA['quantity' => $option_value['quantity'],]]></add>
+		</operation>
+		
+		<operation>
+			<search><![CDATA[$data['entry_qty'] = $this->language->get('entry_qty');]]></search>
+			<add position="after"><![CDATA[
+				$data['text_pcs'] = $this->language->get('text_pcs');
+				$data['text_only'] = $this->language->get('text_only');
+			]]></add>
+		</operation>
+	</file>
+	
+	<file path="catalog/language/*/product/product.php">
+		<operation>
+			<search><![CDATA[$_['entry_qty']                = 'Qty';]]></search>
+			<add position="after"><![CDATA[
+				$_['text_pcs']		= 'pcs.';
+				$_['text_only']		= ' Only {quant} pcs. left ';
+			]]></add>
+		</operation>
+	</file>
+	
+</modification>
+
+
