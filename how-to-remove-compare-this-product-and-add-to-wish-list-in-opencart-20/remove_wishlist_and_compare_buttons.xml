@@ -1,0 +1,58 @@
+<modification>
+	<name>Remove wishlist and compare buttons</name>
+	<version>1.0</version>
+	<link>http://isenselabs.com</link>
+	<author>iSenseLabs</author>
+	<code>remove_wishlist__and_compare</code>
+	
+    <file path="catalog/view/theme/default/template/module/{bestseller,featured,latest,special}*.tpl">
+		<operation>
+			<search><![CDATA[<button type="button" data-toggle="tooltip" title="<?php echo $button_wishlist; ?>" onclick="wishlist.add('<?php echo $product['product_id']; ?>');"><i class="fa fa-heart"></i></button>]]></search>
+			<add position="replace"><![CDATA[]]></add>
+		</operation>
+      	<operation>
+			<search><![CDATA[<button type="button" data-toggle="tooltip" title="<?php echo $button_compare; ?>" onclick="compare.add('<?php echo $product['product_id']; ?>');"><i class="fa fa-exchange"></i></button>]]></search>
+			<add position="replace"><![CDATA[]]></add>
+		</operation>
+	</file>
+  
+  	<file path="catalog/view/theme/default/template/product/category.tpl">
+		<operation>
+			<search><![CDATA[<button type="button" data-toggle="tooltip" title="<?php echo $button_wishlist; ?>" onclick="wishlist.add('<?php echo $product['product_id']; ?>');"><i class="fa fa-heart"></i></button>]]></search>
+			<add position="replace"><![CDATA[]]></add>
+		</operation>
+      	<operation>
+			<search><![CDATA[<button type="button" data-toggle="tooltip" title="<?php echo $button_compare; ?>" onclick="compare.add('<?php echo $product['product_id']; ?>');"><i class="fa fa-exchange"></i></button>]]></search>
+			<add position="replace"><![CDATA[]]></add>
+		</operation>
+	</file>
+  
+  	<file path="catalog/view/theme/default/template/product/product.tpl">
+		<operation>
+			<search><![CDATA[<button type="button" data-toggle="tooltip" class="btn btn-default" title="<?php echo $button_wishlist; ?>" onclick="wishlist.add('<?php echo $product_id; ?>');"><i class="fa fa-heart"></i></button>]]></search>
+			<add position="replace"><![CDATA[]]></add>
+		</operation>
+      	<operation>
+			<search><![CDATA[<button type="button" data-toggle="tooltip" class="btn btn-default" title="<?php echo $button_compare; ?>" onclick="compare.add('<?php echo $product_id; ?>');"><i class="fa fa-exchange"></i></button>]]></search>
+			<add position="replace"><![CDATA[]]></add>
+		</operation>
+	</file>
+  
+  	<file path="catalog/view/theme/default/template/product/search.tpl">
+		<operation>
+			<search><![CDATA[<button type="button" data-toggle="tooltip" title="<?php echo $button_wishlist; ?>" onclick="wishlist.add('<?php echo $product['product_id']; ?>');"><i class="fa fa-heart"></i></button>]]></search>
+			<add position="replace"><![CDATA[]]></add>
+		</operation>
+      	<operation>
+			<search><![CDATA[<button type="button" data-toggle="tooltip" title="<?php echo $button_compare; ?>" onclick="compare.add('<?php echo $product['product_id']; ?>');"><i class="fa fa-exchange"></i></button>]]></search>
+			<add position="replace"><![CDATA[]]></add>
+		</operation>
+	</file>
+  
+  	<file path="catalog/view/theme/default/template/common/header.tpl">
+		<operation>
+			<search><![CDATA[<li><a href="<?php echo $wishlist; ?>" id="wishlist-total" title="<?php echo $text_wishlist; ?>"><i class="fa fa-heart"></i> <span class="hidden-xs hidden-sm hidden-md"><?php echo $text_wishlist; ?></span></a></li>]]></search>
+			<add position="replace"><![CDATA[]]></add>
+		</operation>
+	</file>
+</modification>
